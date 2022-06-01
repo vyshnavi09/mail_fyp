@@ -137,21 +137,14 @@ public class FourthActivity extends AppCompatActivity {
                             break;
 
                         default:
-                            if(result.get(0).equals("yes"))
+                            if(result.get(0).toLowerCase().equals("yes") || result.get(0).toLowerCase().equals("s"))
                             {
                                 status.setText("Searching");
                                 speak("Searching the mail");
                                 SearchEmail();
                             }else
                             {
-                                status.setText("Restarting");
-                                speak("Please Restart the app to reset");
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        exitFromApp();
-                                    }
-                                }, 4000);
+                                speak("Please say to go back to go to previous page");
                             }
                     }
 

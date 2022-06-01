@@ -8,9 +8,10 @@ import android.speech.tts.TextToSpeech;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.mail.Flags;
+import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
@@ -39,7 +40,7 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         //Showing progress dialog while sending email
-        progressDialog = ProgressDialog.show(context, "Reading message", "Please wait...", false, false);
+        progressDialog = ProgressDialog.show(context, "Searching message", "Please wait...", false, false);
 
     }
 
@@ -66,6 +67,7 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
             ArrayList<String> Emailno_arr = new ArrayList<>();
             ArrayList<String> Subject_arr = new ArrayList<>();
             ArrayList<String> From_arr = new ArrayList<>();
+            ArrayList<String> Content_arr = new ArrayList<>();
 
             for (int i = 0, n = messages.length; i < n; i++) {
                 Message message = messages[i];
@@ -74,6 +76,8 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
                 String f = message.getSubject();
                 System.out.println(f);
                 if(s.equals(search) || f.indexOf(search) !=-1) {
+                    Multipart mp = (Multipart)message.getContent();
+                    BodyPart bp = mp.getBodyPart(0);
                     String emailno = "Email Number " + String.valueOf(i+1);
                     System.out.println(emailno);
                     Emailno_arr.add(emailno);
@@ -83,27 +87,21 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
                     String from = "From " + message.getFrom()[0];
                     From_arr.add(from);
                     System.out.println(from);
+                    String c = bp.getContent().toString();
+                    Content_arr.add(c);
+                    System.out.println(bp.getContent().toString());
                 }
-            }
-
-            if(Emailno_arr.size() == 0) {
-                t1 = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-                    @Override
-                    public void onInit(int status) {
-                        if (status == TextToSpeech.SUCCESS) {
-                            t1.speak("No such Emails", TextToSpeech.QUEUE_ADD, null, null);
-                        }
-
-                    }
-                });
             }
 
             t1 = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
                 @Override
                 public void onInit(int status) {
                     if (status == TextToSpeech.SUCCESS) {
+                        if(Emailno_arr.size() == 0) {
+                            t1.speak("No such Mails",TextToSpeech.QUEUE_ADD, null, null);
+                        }
                         for(int j = 0;j < Emailno_arr.size();j++) {
-                            t1.speak(Emailno_arr.get(j) + "\n" + Subject_arr.get(j) + " " + From_arr.get(j), TextToSpeech.QUEUE_ADD, null, null);
+                            t1.speak("Email Number " + String.valueOf(j+1) + "\n" + Subject_arr.get(j) + "\n" + From_arr.get(j) + "\n" + Content_arr.get(j), TextToSpeech.QUEUE_ADD, null, null);
                         }
                     }
                 }

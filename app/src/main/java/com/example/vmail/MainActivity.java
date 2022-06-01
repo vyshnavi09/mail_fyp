@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK && null != data) {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 if(result.get(0).equals("login")) {
-                    Intent intent = new Intent(this, SecondActivity.class);
+                    Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                 }
                 else if(result.get(0).equals("exit")) {

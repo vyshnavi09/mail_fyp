@@ -111,6 +111,10 @@ public class SecondActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, ThirdActivity.class);
                     startActivity(intent);
                 }
+                else if(result.get(0).equals("go back")) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                }
                 else if(result.get(0).equals("read")) {
                     Readmail();
                 }

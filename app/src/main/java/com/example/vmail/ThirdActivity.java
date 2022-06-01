@@ -151,25 +151,18 @@ public class ThirdActivity extends AppCompatActivity {
                         case 3 :
                             Message.setText(result.get(0));
                             status.setText("Confirm?");
-                            speak("Please Confirm the mail\n To : " + To.getText().toString() + "\nSubject : " + Subject.getText().toString() + "\nMessage : " + Message.getText().toString() +"your mail "+Config.EMAIL+"your password" +Config.PASSWORD + "\nSpeak Yes to confirm");
+                            speak("Please Confirm the mail\n To : " + To.getText().toString() + "\nSubject : " + Subject.getText().toString() + "\nMessage : " + Message.getText().toString() + "\nSpeak Yes to confirm");
                             break;
 
                         default:
-                            if(result.get(0).equals("yes"))
+                            if(result.get(0).toLowerCase().equals("yes") || result.get(0).toLowerCase().equals("s"))
                             {
                                 status.setText("Sending");
                                 speak("Sending the mail");
                                 sendEmail();
                             }else
                             {
-                                status.setText("Restarting");
-                                speak("Please Restart the app to reset");
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        exitFromApp();
-                                    }
-                                }, 4000);
+                                speak("Please say to go back to go to previous page");
                             }
                     }
 
