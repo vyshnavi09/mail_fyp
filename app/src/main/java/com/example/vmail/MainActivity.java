@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         b = (Button) findViewById(R.id.login);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                startActivity(intent);
-            }
-        });
+//        b.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     private void speak(String text){

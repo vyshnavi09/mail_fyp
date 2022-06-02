@@ -2,6 +2,7 @@ package com.example.vmail;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 
@@ -49,13 +50,16 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
         super.onPostExecute(aVoid);
         //Dismissing the progress dialog
         progressDialog.dismiss();
+
+        Intent intent = new Intent(context, SecondActivity.class);
+        context.startActivity(intent);
     }
 
     @Override
     protected Void doInBackground(Void... params) {
         //Creating properties
         try {
-            Session session = Session.getDefaultInstance(new Properties());
+            Session session = Session.getInstance(new Properties());
             Store store = session.getStore("imaps");
             store.connect("imap.gmail.com", Config.EMAIL, Config.PASSWORD);
             Folder inbox = store.getFolder("INBOX");
@@ -76,8 +80,8 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
                 String f = message.getSubject();
                 System.out.println(f);
                 if(s.equals(search) || f.indexOf(search) !=-1) {
-                    Multipart mp = (Multipart)message.getContent();
-                    BodyPart bp = mp.getBodyPart(0);
+//                    Multipart mp = (Multipart)message.getContent();
+//                    BodyPart bp = mp.getBodyPart(0);
                     String emailno = "Email Number " + String.valueOf(i+1);
                     System.out.println(emailno);
                     Emailno_arr.add(emailno);
@@ -87,9 +91,9 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
                     String from = "From " + message.getFrom()[0];
                     From_arr.add(from);
                     System.out.println(from);
-                    String c = bp.getContent().toString();
-                    Content_arr.add(c);
-                    System.out.println(bp.getContent().toString());
+//                    String c = bp.getContent().toString();
+//                    Content_arr.add(c);
+//                    System.out.println(bp.getContent().toString());
                 }
             }
 
@@ -101,8 +105,9 @@ public class SearchMail extends AsyncTask<Void,Void,Void> {
                             t1.speak("No such Mails",TextToSpeech.QUEUE_ADD, null, null);
                         }
                         for(int j = 0;j < Emailno_arr.size();j++) {
-                            t1.speak("Email Number " + String.valueOf(j+1) + "\n" + Subject_arr.get(j) + "\n" + From_arr.get(j) + "\n" + Content_arr.get(j), TextToSpeech.QUEUE_ADD, null, null);
+                            t1.speak("Email Number " + String.valueOf(j+1) + "\n" + Subject_arr.get(j) + "\n" + From_arr.get(j) + "\n", TextToSpeech.QUEUE_ADD, null, null);
                         }
+                        t1.speak("Completed reading all searched mails",TextToSpeech.QUEUE_ADD, null, null);
                     }
                 }
             });

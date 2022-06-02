@@ -14,6 +14,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
@@ -140,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                             mail = mail.replaceAll("underscore","ea");
                             mail = mail.replaceAll("dot",".");
                             String id = mail + "@gmail.com";
+                            Config.EMAIL = id;
                             mailid.setText(id);
                             speak("What should be the Password?");
                             break;
@@ -162,13 +167,39 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 pwd = pwd.replaceAll("capital","");
                             }
-                            password.setText("Hellosam@3582");
+                            if(pwd.equals("hello")) {
+                                Config.PASSWORD = "Hellosam@3582";
+                                password.setText("Hellosam@3582");
+                            }
+                            if(pwd.equals("rose")) {
+                                Config.EMAIL = "vyshumandadi09@gmail.com";
+                                Config.PASSWORD = "Vyshupapa@923";
+                                password.setText("Rosehello@1357");
+                            }
+                            Config.PASSWORD = pwd;
+                            password.setText(pwd);
+
                             speak("Please Conform,Say yes or no to Conform");
                             break;
                         default:
                             if(result.get(0).equals("yes")||result.get(0).equals("s"))
                             {
-                               Passwordauthenticate();;
+                                if(!Python.isStarted()) {
+                                    Python.start(new AndroidPlatform(this));
+                                }
+                                Python py = Python.getInstance();
+                                PyObject pyt = py.getModule("SpeakerIdentification");
+                                PyObject obj = pyt.callAttr("test_model");
+                                String o = obj + "@gmail.com";
+                                System.out.println(o);
+                                if(o.equals(Config.EMAIL)) {
+                                    Passwordauthenticate();
+                                }
+                                else {
+                                    speak("You are not allowed to Login in");
+                                    Intent intent = new Intent(this, MainActivity.class);
+                                    startActivity(intent);
+                                }
                             }
                             if(result.get(0).equals("no")) {
                                 numberofclicks = 0;

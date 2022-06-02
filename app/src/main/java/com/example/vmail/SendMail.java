@@ -4,6 +4,7 @@ import javax.mail.Session;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
@@ -20,7 +21,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 
-//Class is extending AsyncTask because this class is going to perform a networking operation
 public class SendMail extends AsyncTask<Void,Void,Void> {
 
     //Declaring Variables
@@ -45,14 +45,14 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
         this.email = email;
         this.subject = subject;
         this.message = message;
-//        t1=new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-//            @Override
-//            public void onInit(int status) {
-//                if(status != TextToSpeech.ERROR) {
-//                    t1.setLanguage(Locale.UK);
-//                }
-//            }
-//        });
+        t1=new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        });
     }
 
     @Override
@@ -70,15 +70,16 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
         progressDialog.dismiss();
         //Showing a success message
         Toast.makeText(context,"Message Sent",Toast.LENGTH_LONG).show();
-        t1=new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+        t1 = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status == TextToSpeech.SUCCESS) {
-                    t1.speak("Message Sent", TextToSpeech.QUEUE_FLUSH, null, null);
+                if (status == TextToSpeech.SUCCESS) {
+                    t1.speak("Message sent", TextToSpeech.QUEUE_FLUSH, null);
                 }
             }
         });
-
+        Intent intent = new Intent(context, SecondActivity.class);
+        context.startActivity(intent);
     }
 
     @Override
@@ -96,7 +97,7 @@ public class SendMail extends AsyncTask<Void,Void,Void> {
         props.put("mail.smtp.port", "465");
         System.out.println("Hello");
         //Creating a new session
-        session = Session.getDefaultInstance(props,
+        session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
                     //Authenticating the password
                     protected PasswordAuthentication getPasswordAuthentication() {

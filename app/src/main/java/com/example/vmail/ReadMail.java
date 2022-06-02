@@ -75,12 +75,12 @@ public class ReadMail extends AsyncTask<Void,Void,Void> {
             ArrayList<String> Emailno_arr = new ArrayList<>();
             ArrayList<String> Subject_arr = new ArrayList<>();
             ArrayList<String> From_arr = new ArrayList<>();
-            ArrayList<String> Content_arr = new ArrayList<>();
+//            ArrayList<String> Content_arr = new ArrayList<>();
 
             for (int i = 0, n = messages.length; i < n; i++) {
                 Message message = messages[i];
-                Multipart mp = (Multipart)message.getContent();
-                BodyPart bp = mp.getBodyPart(0);
+//                Multipart mp = (Multipart)message.getContent();
+//                BodyPart bp = mp.getBodyPart(0);
                 String emailno = "Email Number " + String.valueOf(i+1);
                 System.out.println(emailno);
                 Emailno_arr.add(emailno);
@@ -90,9 +90,9 @@ public class ReadMail extends AsyncTask<Void,Void,Void> {
                 String from = "From " + message.getFrom()[0];
                 From_arr.add(from);
                 System.out.println(from);
-                String c = bp.getContent().toString();
-                Content_arr.add(c);
-                System.out.println(bp.getContent().toString());
+//                String c = bp.getContent().toString();
+//                Content_arr.add(c);
+//                System.out.println(bp.getContent().toString());
             }
             System.out.println(Emailno_arr.size());
 
@@ -104,8 +104,9 @@ public class ReadMail extends AsyncTask<Void,Void,Void> {
                             t1.speak("No unread Mails",TextToSpeech.QUEUE_ADD, null, null);
                         }
                         for(int j = 0;j < Emailno_arr.size();j++) {
-                            t1.speak(Emailno_arr.get(j) + "\n" + Subject_arr.get(j) + " \n" + From_arr.get(j) + "\n" + Content_arr.get(j), TextToSpeech.QUEUE_ADD, null, null);
+                            t1.speak(Emailno_arr.get(j) + "\n" + Subject_arr.get(j) + " \n" + From_arr.get(j) + "\n" , TextToSpeech.QUEUE_ADD, null, null);
                         }
+                        t1.speak("Completed reading all unread mails",TextToSpeech.QUEUE_ADD, null, null);
                     }
                 }
             });
