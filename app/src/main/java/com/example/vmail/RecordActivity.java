@@ -1,37 +1,50 @@
 package com.example.vmail;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class RecordActivity extends AppCompatActivity {
 
-    private Button b;
+    private static int MICROPHONE_PERMISSION_CODE = 200;
+    MediaRecorder mediaRecorder;
+    MediaPlayer mediaPlayer;
     private boolean IsInitialVoiceFinished;
     private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        IsInitialVoiceFinished = false;
+        setContentView(R.layout.activity_record);
+
+        if(isMike()) {
+            getMikePermission();
+        }
 
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -41,20 +54,18 @@ public class MainActivity extends AppCompatActivity {
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.e("TTS", "This Language is not supported");
                     }
-                    speak("Welcome to VMail, Please login..");
+                    speak("Please say record and tell something in order to login");
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             IsInitialVoiceFinished = true;
                         }
-                    }, 40);
+                    }, 1);
                 } else {
                     Log.e("TTS", "Initilization Failed!");
                 }
             }
         });
-
-        b = (Button) findViewById(R.id.login);
     }
 
     private void speak(String text){
@@ -66,6 +77,63 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void btnRecordPressed() {
+        try{
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setOutputFile(getRecordingFilePath());
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+
+            Toast.makeText(this, "Recording started", Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void btnStopPressed() {
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+        Toast.makeText(this, "Recording stopped", Toast.LENGTH_LONG).show();
+        if(!Python.isStarted()) {
+            Python.start(new AndroidPlatform(this));
+        }
+        Python py = Python.getInstance();
+        PyObject pyt = py.getModule("SpeakerIdentification");
+        PyObject obj = pyt.callAttr("test_model");
+        System.out.println(obj);
+        String str = obj.toJava(String.class);
+        String[] arrOfStr = str.split("_", 2);
+        Config.EMAIL = arrOfStr[0];
+        Config.PASSWORD = arrOfStr[1];
+        Intent intent = new Intent(this, SecondActivity.class);
+        startActivity(intent);
+        speak("login successfull");
+    }
+
+    private boolean isMike() {
+        if(this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void getMikePermission() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},MICROPHONE_PERMISSION_CODE);
+        }
+    }
+    private String getRecordingFilePath(){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File musicDir = cw.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        File file  = new File(musicDir, "sample" + ".wav");
+        return file.getPath();
+    }
     @Override
     public void onDestroy() {
         if (tts != null) {
@@ -91,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             startActivityForResult(i, 100);
         } catch (ActivityNotFoundException a) {
-            Toast.makeText(MainActivity.this, "Your device doesn't support Speech Recognition", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RecordActivity.this, "Your device doesn't support Speech Recognition", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -111,9 +179,11 @@ public class MainActivity extends AppCompatActivity {
                     speak("Exiting!");
                     exitFromApp();
                 }
-                else if(result.get(0).equals("login")) {
-                    Intent intent = new Intent(this, RecordActivity.class);
-                    startActivity(intent);
+                else if(result.get(0).equals("record")) {
+                    btnRecordPressed();
+                }
+                else if(result.get(0).equals("stop")) {
+                    btnStopPressed();
                 }
                 else {
                     speak("can't process please repeat");
@@ -124,4 +194,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-

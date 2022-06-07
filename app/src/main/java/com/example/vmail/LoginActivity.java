@@ -20,16 +20,6 @@ import com.chaquo.python.android.AndroidPlatform;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Properties;
-
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.search.FlagTerm;
 
 
 public class LoginActivity extends AppCompatActivity {

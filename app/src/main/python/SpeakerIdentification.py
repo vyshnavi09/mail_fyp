@@ -176,13 +176,13 @@ def test_model():
     file_paths = join(dirname(__file__), "testing_set_addition.txt")
     # with open(file_paths,'r',encoding='utf8', errors = "ignore") as fil:
     # 	data = fil.read().lower()
-    modelpath = join(dirname(__file__), "trained_models/")
+    modelpath = join(dirname(__file__), "trained_model/")
     gmm_files = [os.path.join(modelpath,fname) for fname in os.listdir(modelpath) if fname.endswith('.gmm')]
     #Load the Gaussian gender Models
     models = [pickle.load(open(fname,'rb')) for fname in gmm_files]
     speakers = [fname.split("\\")[-1].split(".gmm")[0] for fname in gmm_files]
     # # Read the test directory and get the list of test audio files
-    source = join(dirname(__file__), "testing_sets/")
+    source = join(dirname(__file__), "testing_set/")
     with open(file_paths,'r',encoding='utf8', errors = "ignore") as fill:
         for path in fill:
             path = path.strip()
